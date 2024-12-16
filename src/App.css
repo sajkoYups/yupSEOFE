@@ -58,6 +58,11 @@ th {
   color: #721c24;
 }
 
+.grade-f {
+  background-color: #f5c6cb;
+  color: #721c24;
+}
+
 ul {
   list-style-type: none;
   padding: 0;
@@ -160,4 +165,18 @@ form {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.broken-links-good {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.broken-links-bad {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  border-radius: 4px;
 }

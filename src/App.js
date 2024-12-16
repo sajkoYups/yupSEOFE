@@ -11,6 +11,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 // Register the necessary components
 ChartJS.register(
@@ -177,150 +179,337 @@ function App() {
     return <Bar data={data} />;
   };
 
+  const renderKeywordChart = (keywordAnalysis) => {
+    const data = {
+      labels: keywordAnalysis.map((analysis) => analysis.keyword),
+      datasets: [
+        {
+          label: "In Title",
+          data: keywordAnalysis.map((analysis) => analysis.inTitleCount),
+          backgroundColor: "#FFB6C1",
+        },
+        {
+          label: "In Headings",
+          data: keywordAnalysis.map((analysis) => analysis.inHeadingsCount),
+          backgroundColor: "#ADD8E6",
+        },
+        {
+          label: "In Body",
+          data: keywordAnalysis.map((analysis) => analysis.inBodyCount),
+          backgroundColor: "#98FB98",
+        },
+      ],
+    };
+
+    return <Bar data={data} />;
+  };
+
+  const exportToPDF = () => {
+    const input = document.getElementById("pdf-content");
+    const pageHeight = 297; // A4 page height in mm
+
+    html2canvas(input, { scale: 2, useCORS: true })
+      .then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+        const imgWidth = 190; // Adjusted width for padding
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
+
+        pdf.save("download.pdf");
+      })
+      .catch((error) => {
+        console.error("Error generating PDF:", error);
+      });
+  };
+
   return (
     <div className="App">
-      {loading && (
-        <div className="loading-overlay">
-          <div className="spinner"></div>
-          <p>
-            Loading... Please wait while we analyze your SEO data. This
-            operation might take more then a minute
-          </p>
-        </div>
-      )}
-      <header className="App-header">
-        <h1>YupSEO Auditor</h1>
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="url-input">Website URL:</label>
-          <input
-            id="url-input"
-            type="text"
-            placeholder="Enter URL"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            required
-          />
-          <label htmlFor="depth-input">Crawl Depth:</label>
-          <input
-            id="depth-input"
-            type="number"
-            placeholder="Max Depth"
-            value={maxDepth}
-            onChange={(e) => setMaxDepth(e.target.value)}
-            min="1"
-            required
-          />
-          <label htmlFor="keywords-input">Keywords:</label>
-          <input
-            id="keywords-input"
-            type="text"
-            placeholder="Enter Keywords and press Enter"
-            value={keywordInput}
-            onChange={handleKeywordInput}
-            onKeyDown={handleKeywordAdd}
-          />
-          <div className="keyword-tags">
-            {keywords.map((keyword, index) => (
-              <div
-                key={index}
-                className="keyword-tag"
-                style={{ backgroundColor: keyword.color }}
-              >
-                <span>{keyword.text}</span>
-                <button onClick={() => handleKeywordRemove(index)}>x</button>
-              </div>
-            ))}
+      {results && <button onClick={exportToPDF}>Export to PDF</button>}
+      <div id="pdf-content" style={{ padding: "20px" }}>
+        {loading && (
+          <div className="loading-overlay">
+            <div className="spinner"></div>
+            <p>
+              Loading... Please wait while we analyze your SEO data. This
+              operation might take more than a minute.
+            </p>
           </div>
-          <button type="submit">Audit</button>
-        </form>
-        {results && (
-          <>
-            <h1>SEO Analysis:</h1>
-            {results.seoResults.map((result, index) => {
-              const grades = calculateGrade(result);
-              return (
-                <div key={index}>
-                  <h3>{result.url}</h3>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Category</th>
-                        <th>Grade</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>Title Tags</td>
-                        <td className={getGradeClass(grades.title)}>
-                          {grades.title}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Meta Descriptions</td>
-                        <td className={getGradeClass(grades.metaDescription)}>
-                          {grades.metaDescription}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Headings</td>
-                        <td className={getGradeClass(grades.headings)}>
-                          {grades.headings}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Page Load Speed</td>
-                        <td className={getGradeClass(grades.pageLoadSpeed)}>
-                          {grades.pageLoadSpeed}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>Duplicate Content</td>
-                        <td>{result.isContentDuplicate ? "Yes" : "No"}</td>
-                      </tr>
-                      <tr>
-                        <td>Images without Alt</td>
-                        <td>{result.imagesWithoutAlt}</td>
-                      </tr>
-                      <tr>
-                        <td>Canonical Tag</td>
-                        <td>
-                          {result.canonicalLink} (
-                          {result.isCanonicalCorrect ? "Correct" : "Incorrect"})
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  {renderChart(result)}
-                  <div>
-                    <h4>Keyword Analysis:</h4>
-                    <ul>
-                      {result.keywordAnalysis.map((analysis, i) => (
-                        <li key={i}>
-                          {analysis.keyword}:{analysis.inTitleCount} in Title,
-                          {analysis.inHeadingsCount} in Headings,
-                          {analysis.inBodyCount} in Body
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h4>Broken Links:</h4>
-                    {result.brokenLinks.length > 0 ? (
-                      <ul>
-                        {result.brokenLinks.map((link, i) => (
-                          <li key={i}>{link}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p>No broken links found.</p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </>
         )}
-      </header>
+        <header className="App-header">
+          <h1>YupSEO Auditor</h1>
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="url-input">Website URL:</label>
+            <input
+              id="url-input"
+              type="text"
+              placeholder="Enter URL"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              required
+            />
+            <label htmlFor="depth-input">Crawl Depth:</label>
+            <input
+              id="depth-input"
+              type="number"
+              placeholder="Max Depth"
+              value={maxDepth}
+              onChange={(e) => setMaxDepth(e.target.value)}
+              min="1"
+              required
+            />
+            <label htmlFor="keywords-input">Keywords:</label>
+            <input
+              id="keywords-input"
+              type="text"
+              placeholder="Enter Keywords and press Enter"
+              value={keywordInput}
+              onChange={handleKeywordInput}
+              onKeyDown={handleKeywordAdd}
+            />
+            <div className="keyword-tags">
+              {keywords.map((keyword, index) => (
+                <div
+                  key={index}
+                  className="keyword-tag"
+                  style={{ backgroundColor: keyword.color }}
+                >
+                  <span>{keyword.text}</span>
+                  <button onClick={() => handleKeywordRemove(index)}>x</button>
+                </div>
+              ))}
+            </div>
+            <button type="submit">Audit</button>
+          </form>
+          {results && (
+            <>
+              <h1>SEO Analysis:</h1>
+              <div className="grade-description">
+                <p>
+                  <strong>Grade Descriptions:</strong>
+                  <br />
+                  <br />
+                  <span className="grade-a">A:</span> Excellent - Meets all SEO
+                  best practices.
+                  <br />
+                  <br />
+                  <span className="grade-b">B:</span> Good - Minor improvements
+                  needed.
+                  <br />
+                  <br />
+                  <span className="grade-c">C:</span> Fair - Needs significant
+                  improvements.
+                  <br />
+                  <br />
+                  <span className="grade-f">F:</span> Poor - Does not meet SEO
+                  standards.
+                </p>
+                <p>
+                  <strong>SEO Categories Explained:</strong>
+                  <br />
+                  <br />
+                  <strong>Title Tags:</strong> The HTML element that specifies
+                  the title of a web page. It's important for SEO and user
+                  experience.
+                  <br />
+                  <br />
+                  <strong>Meta Descriptions:</strong> A brief summary of a web
+                  page's content. It appears in search results and can influence
+                  click-through rates.
+                  <br />
+                  <br />
+                  <strong>Headings:</strong> HTML tags (H1, H2, etc.) used to
+                  define the headings of a page. They help structure content and
+                  are important for SEO.
+                  <br />
+                  <br />
+                  <strong>Page Load Speed:</strong> The time it takes for a web
+                  page to load. Faster load times improve user experience and
+                  SEO rankings.
+                  <br />
+                  <br />
+                  <strong>Duplicate Content:</strong> Content that appears on
+                  more than one web page. It can confuse search engines and
+                  affect SEO.
+                  <br />
+                  <br />
+                  <strong>Images without Alt:</strong> Images on a page that
+                  lack alternative text. Alt text is important for accessibility
+                  and SEO.
+                  <br />
+                  <br />
+                  <strong>Canonical Tag:</strong> An HTML element that helps
+                  prevent duplicate content issues by specifying the preferred
+                  version of a web page.
+                </p>
+              </div>
+              {results.seoResults.map((result, index) => {
+                const grades = calculateGrade(result);
+                return (
+                  <div key={index}>
+                    <h3>Page: {result.url}</h3>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Category</th>
+                          <th>Grade</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Title Tags</td>
+                          <td className={getGradeClass(grades.title)}>
+                            {grades.title}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Meta Descriptions</td>
+                          <td className={getGradeClass(grades.metaDescription)}>
+                            {grades.metaDescription}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Headings</td>
+                          <td className={getGradeClass(grades.headings)}>
+                            {grades.headings}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Page Load Speed</td>
+                          <td className={getGradeClass(grades.pageLoadSpeed)}>
+                            {grades.pageLoadSpeed}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Duplicate Content</td>
+                          <td>{result.isContentDuplicate ? "Yes" : "No"}</td>
+                        </tr>
+                        <tr>
+                          <td>Images without Alt</td>
+                          <td>{result.imagesWithoutAlt}</td>
+                        </tr>
+                        <tr>
+                          <td>Canonical Tag</td>
+                          <td>
+                            {result.canonicalLink} (
+                            {result.isCanonicalCorrect
+                              ? "Correct"
+                              : "Incorrect"}
+                            )
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    {renderChart(result)}
+                    <div>
+                      <h4>Keyword Analysis:</h4>
+                      <p>
+                        There isn't a strict SEO norm or rule about the exact
+                        number of times a keyword should appear on a webpage.
+                        However, there are some best practices and guidelines to
+                        consider:
+                      </p>
+                      <ul>
+                        <li>
+                          <strong>Keyword Density:</strong> This refers to the
+                          percentage of times a keyword appears on a page
+                          compared to the total number of words. While there is
+                          no ideal percentage, a keyword density of 1-2% is
+                          often recommended. Overusing keywords (known as
+                          "keyword stuffing") can lead to penalties from search
+                          engines.
+                        </li>
+                        <li>
+                          <strong>Natural Language:</strong> Keywords should be
+                          integrated naturally into the content. The focus
+                          should be on providing valuable and relevant
+                          information to the reader rather than forcing keywords
+                          into the text.
+                        </li>
+                        <li>
+                          <strong>Placement:</strong> Keywords should be
+                          strategically placed in important areas such as:
+                          <ul>
+                            <li>Title tags</li>
+                            <li>Meta descriptions</li>
+                            <li>Headings (H1, H2, etc.)</li>
+                            <li>The first 100 words of the content</li>
+                            <li>Alt text for images</li>
+                            <li>URL slugs</li>
+                          </ul>
+                        </li>
+                        <li>
+                          <strong>Semantic Keywords:</strong> Use related terms
+                          and synonyms to provide context and depth to the
+                          content. This helps search engines understand the
+                          topic better and can improve rankings.
+                        </li>
+                        <li>
+                          <strong>User Experience:</strong> Ultimately, the
+                          content should be written for users, not search
+                          engines. Ensuring a good user experience with
+                          high-quality, informative content is more important
+                          than focusing solely on keyword frequency.
+                        </li>
+                        <li>
+                          <strong>Content Length:</strong> Longer content
+                          naturally allows for more keyword usage without
+                          appearing spammy. However, the content should be as
+                          long as necessary to cover the topic comprehensively.
+                        </li>
+                      </ul>
+                      <p>
+                        It's important to remember that search engines like
+                        Google use complex algorithms that consider many factors
+                        beyond keyword usage, such as page load speed,
+                        mobile-friendliness, backlinks, and user engagement
+                        metrics. Therefore, a holistic approach to SEO is
+                        recommended.
+                      </p>
+                      <p>Here is your analysis on the keywords:</p>
+                      {renderKeywordChart(result.keywordAnalysis)}
+                    </div>
+                    <div>
+                      <h4>Broken Links:</h4>
+                      <div
+                        className={
+                          result.brokenLinks.length > 0
+                            ? "broken-links-bad"
+                            : "broken-links-good"
+                        }
+                      >
+                        {result.brokenLinks.length > 0 ? (
+                          <ul>
+                            {result.brokenLinks.map((link, i) => (
+                              <li key={i}>{link}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p>No broken links found.</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <footer style={{ marginTop: "20px", textAlign: "center" }}>
+                <p>Generated by YupSEO Auditor</p>
+              </footer>
+            </>
+          )}
+        </header>
+      </div>
     </div>
   );
 }
