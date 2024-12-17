@@ -55,6 +55,8 @@ function App() {
   const [results, setResults] = useState(null);
   const [availableColors, setAvailableColors] = useState([...lightColors]);
   const [loading, setLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [pendingSubmitEvent, setPendingSubmitEvent] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,7 +81,7 @@ function App() {
 
   const handleKeywordAdd = (e) => {
     if (e.key === "Enter") {
-      e.preventDefault(); // Prevent form submission
+      e.preventDefault();
 
       if (keywordInput.trim()) {
         // If there is input, add the keyword
@@ -98,16 +100,24 @@ function App() {
           );
         }
       } else {
-        // If input is empty, show confirmation dialog
-        if (
-          window.confirm(
-            "You are about to perform an audit on a website. Click OK if you want to continue."
-          )
-        ) {
-          handleSubmit(e); // Call handleSubmit to proceed with the form submission
-        }
+        setShowConfirmModal(true);
+        setPendingSubmitEvent(e);
       }
     }
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    setShowConfirmModal(true);
+    setPendingSubmitEvent(e);
+  };
+
+  const handleConfirmAudit = () => {
+    if (pendingSubmitEvent) {
+      handleSubmit(pendingSubmitEvent);
+    }
+    setShowConfirmModal(false);
+    setPendingSubmitEvent(null);
   };
 
   const handleKeywordRemove = (index) => {
@@ -249,7 +259,7 @@ function App() {
         )}
         <header className="App-header">
           <h1>YupSEO Auditor</h1>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleFormSubmit}>
             <label htmlFor="url-input">Website URL:</label>
             <input
               id="url-input"
@@ -510,6 +520,34 @@ function App() {
           )}
         </header>
       </div>
+      {showConfirmModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Start Website Audit</h2>
+            <p>
+              You are about to perform a comprehensive SEO audit on this
+              website. This process may take several minutes.
+            </p>
+            <div className="modal-actions">
+              <button
+                className="modal-button cancel"
+                onClick={() => {
+                  setShowConfirmModal(false);
+                  setPendingSubmitEvent(null);
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="modal-button confirm"
+                onClick={handleConfirmAudit}
+              >
+                Start Audit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
