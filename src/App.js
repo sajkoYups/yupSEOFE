@@ -136,6 +136,7 @@ function App() {
         : "C";
     grades.headings = result.h1Feedback === "Good" ? "A" : "C";
     grades.pageLoadSpeed = result.loadTimeFeedback === "Good" ? "A" : "C";
+    grades.internalLinks = result.internalPageLinksCount > 0 ? "A" : "C";
 
     return grades;
   };
@@ -156,7 +157,14 @@ function App() {
 
   const renderChart = (result) => {
     const data = {
-      labels: ["Title", "Meta Description", "Headings", "Page Load Speed"],
+      labels: [
+        "Title",
+        "Meta Description",
+        "Headings",
+        "Page Load Speed",
+        "Internal Page Links",
+        "Internal Section Links",
+      ],
       datasets: [
         {
           label: "SEO Grades",
@@ -169,6 +177,8 @@ function App() {
               : 1,
             result.h1Feedback === "Good" ? 3 : 1,
             result.loadTimeFeedback === "Good" ? 3 : 1,
+            result.internalPageLinksCount > 0 ? 3 : 1,
+            result.internalSectionLinksCount > 0 ? 3 : 1,
           ],
           backgroundColor: [
             result.isTitleUnique ? "#d4edda" : "#f8d7da",
@@ -179,6 +189,8 @@ function App() {
               : "#fff3cd",
             result.h1Feedback === "Good" ? "#d4edda" : "#f8d7da",
             result.loadTimeFeedback === "Good" ? "#d4edda" : "#f8d7da",
+            result.internalPageLinksCount > 0 ? "#d4edda" : "#f8d7da",
+            result.internalSectionLinksCount > 0 ? "#d4edda" : "#f8d7da",
           ],
         },
       ],
@@ -305,6 +317,39 @@ function App() {
         ) : (
           <p>No social media links found.</p>
         )}
+      </div>
+    );
+  };
+
+  const renderInternalLinks = (result) => {
+    return (
+      <div>
+        <strong>Internal Page Links ({result.internalPageLinksCount}):</strong>
+        {/* <ul>
+          {result.internalPageLinks.map((link, index) => (
+            <li key={index}>
+              <a href={link} target="_blank" rel="noopener noreferrer">
+                {link}
+              </a>
+            </li>
+          ))}
+        </ul> */}
+        <strong>
+          Internal Section Links ({result.internalSectionLinksCount}):
+        </strong>
+        {/* <ul>
+          {result.internalSectionLinks.map((link, index) => (
+            <li key={index}>
+              <a
+                href={`${result.url}${link}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {link}
+              </a>
+            </li>
+          ))}
+        </ul> */}
       </div>
     );
   };
@@ -439,6 +484,7 @@ function App() {
                     {renderAnalyticsStatus(result)}
                     {renderWordCountStatus(result)}
                     {renderSocialLinks(result)}
+                    {renderInternalLinks(result)}
                     <table>
                       <thead>
                         <tr>
@@ -470,6 +516,14 @@ function App() {
                           <td className={getGradeClass(grades.pageLoadSpeed)}>
                             {grades.pageLoadSpeed}
                           </td>
+                        </tr>
+                        <tr>
+                          <td>Internal Page Links</td>
+                          <td>{result.internalPageLinksCount}</td>
+                        </tr>
+                        <tr>
+                          <td>Internal Section Links</td>
+                          <td>{result.internalSectionLinksCount}</td>
                         </tr>
                         <tr>
                           <td>Duplicate Content</td>
