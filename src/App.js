@@ -238,6 +238,77 @@ function App() {
     }
   };
 
+  const renderLangAttributeStatus = (result) => {
+    return (
+      <div>
+        <strong>Lang Attribute:</strong>{" "}
+        <span style={{ color: result.hasLangAttribute ? "green" : "red" }}>
+          {result.hasLangAttribute ? "Yes" : "No"}
+        </span>
+      </div>
+    );
+  };
+
+  const renderSecurityStatus = (result) => {
+    return (
+      <div>
+        <strong>SSL Enabled:</strong>{" "}
+        <span style={{ color: result.isSSLEnabled ? "green" : "red" }}>
+          {result.isSSLEnabled ? "Yes" : "No"}
+        </span>
+        <br />
+        <strong>Robots.txt:</strong>{" "}
+        <span style={{ color: result.hasRobotsTxt ? "green" : "red" }}>
+          {result.hasRobotsTxt ? "Yes" : "No"}
+        </span>
+      </div>
+    );
+  };
+
+  const renderAnalyticsStatus = (result) => {
+    return (
+      <div>
+        <strong>Google Analytics:</strong>{" "}
+        <span style={{ color: result.hasGoogleAnalytics ? "green" : "red" }}>
+          {result.hasGoogleAnalytics ? "Yes" : "No"}
+        </span>
+      </div>
+    );
+  };
+
+  const renderWordCountStatus = (result) => {
+    return (
+      <div>
+        <strong>Word Count:</strong> {result.wordCount} <br />
+        <strong>Grade:</strong>{" "}
+        <span className={getGradeClass(result.wordCountGrade)}>
+          {result.wordCountGrade}
+        </span>
+      </div>
+    );
+  };
+
+  const renderSocialLinks = (result) => {
+    return (
+      <div>
+        <strong>Social Media Links:</strong>
+        {Object.keys(result.socialLinks).length > 0 ? (
+          <ul>
+            {Object.entries(result.socialLinks).map(([platform, link]) => (
+              <li key={platform}>
+                <a href={link} target="_blank" rel="noopener noreferrer">
+                  {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No social media links found.</p>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="App">
       {results && <button onClick={exportToPDF}>Export to PDF</button>}
@@ -363,6 +434,11 @@ function App() {
                 return (
                   <div key={index}>
                     <h3>Page: {result.url}</h3>
+                    {renderLangAttributeStatus(result)}
+                    {renderSecurityStatus(result)}
+                    {renderAnalyticsStatus(result)}
+                    {renderWordCountStatus(result)}
+                    {renderSocialLinks(result)}
                     <table>
                       <thead>
                         <tr>
