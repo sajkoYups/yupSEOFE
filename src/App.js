@@ -11,8 +11,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
 // Register the necessary components
 ChartJS.register(
@@ -62,7 +60,7 @@ function App() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:5001/api/crawl", {
+      const response = await axios.post("http://localhost:5001/crawl", {
         url,
         maxDepth,
         keywords: keywords.map((k) => k.text), // Send only the text of the keywords
@@ -214,34 +212,30 @@ function App() {
     return <Bar data={data} />;
   };
 
-  const exportToPDF = () => {
-    const input = document.getElementById("pdf-content");
-    const pageHeight = 297; // A4 page height in mm
+  const exportToPDF = async () => {
+    if (!results) return;
 
-    html2canvas(input, { scale: 2, useCORS: true })
-      .then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        const pdf = new jsPDF("p", "mm", "a4");
-        const imgWidth = 190; // Adjusted width for padding
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 0;
-
-        pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft > 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, "PNG", 10, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
+    try {
+      const response = await axios.post(
+        "http://localhost:5001/pdf/export",
+        {
+          seoResults: results.seoResults,
+        },
+        {
+          responseType: "blob", // Important for handling binary data
         }
+      );
 
-        pdf.save("download.pdf");
-      })
-      .catch((error) => {
-        console.error("Error generating PDF:", error);
-      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "seo_audit_report.pdf");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error exporting to PDF:", error);
+    }
   };
 
   return (
