@@ -380,6 +380,21 @@ function App() {
     );
   };
 
+  const cssAndJSMinification = (result) => {
+    return (
+      <div>
+        <div>
+          <strong>CSS Needs Minification:</strong>{" "}
+          {result.cssNeedsMinification ? "Yes" : "No"}
+        </div>
+        <div>
+          <strong>JS Needs Minification:</strong>{" "}
+          {result.jsNeedsMinification ? "Yes" : "No"}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="App">
       {results && <button onClick={exportToPDF}>Export to PDF</button>}
@@ -513,6 +528,9 @@ function App() {
                     {renderInternalLinks(result)}
                     {renderInlineStylesCountAndDeprecatedTags(result)}
                     {isHttp2Supported(result)}
+                    {result.cssNeedsMinification &&
+                      result.jsNeedsMinification &&
+                      cssAndJSMinification(result)}
                     <table>
                       <thead>
                         <tr>
