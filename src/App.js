@@ -55,8 +55,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingSubmitEvent, setPendingSubmitEvent] = useState(null);
-  const [deprecatedTags, setDeprecatedTags] = useState([]);
-  const [inlineStylesCount, setInlineStylesCount] = useState(0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,8 +66,7 @@ function App() {
         keywords: keywords.map((k) => k.text),
       });
       setResults(response.data);
-      setDeprecatedTags(response.data.deprecatedTagsFound);
-      setInlineStylesCount(response.data.inlineStylesCount);
+      console.log(response.data);
     } catch (error) {
       console.error("Error fetching SEO data:", error);
     } finally {
@@ -358,6 +355,31 @@ function App() {
     );
   };
 
+  const renderInlineStylesCountAndDeprecatedTags = (result) => {
+    return (
+      <div>
+        <div>
+          <strong>Inline Styles Count:</strong> {result.inlineStylesCount}
+        </div>
+        <div>
+          <strong>Deprecated HTML Tags:</strong>{" "}
+          {result.deprecatedTagsFound?.join(", ") || "None"}
+        </div>
+      </div>
+    );
+  };
+
+  const isHttp2Supported = (result) => {
+    return (
+      <div>
+        <div>
+          <strong>HTTP/2 Supported:</strong>{" "}
+          {result.isHttp2Supported ? "Yes" : "No"}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="App">
       {results && <button onClick={exportToPDF}>Export to PDF</button>}
@@ -489,17 +511,8 @@ function App() {
                     {renderWordCountStatus(result)}
                     {renderSocialLinks(result)}
                     {renderInternalLinks(result)}
-                    <div>
-                      <h3>SEO Checks</h3>
-                      <p>
-                        Deprecated HTML Tags:{" "}
-                        {deprecatedTags?.join(", ") || "None"}
-                      </p>
-                      <p>
-                        Inline Styles Count:{" "}
-                        {inlineStylesCount ? inlineStylesCount : "None"}
-                      </p>
-                    </div>
+                    {renderInlineStylesCountAndDeprecatedTags(result)}
+                    {isHttp2Supported(result)}
                     <table>
                       <thead>
                         <tr>
