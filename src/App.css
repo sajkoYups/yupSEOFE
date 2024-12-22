@@ -253,3 +253,25 @@ form {
     transform: translateY(0);
   }
 }
+
+.gbp-link {
+  display: inline-block;
+  color: #007bff;
+  text-decoration: none;
+  margin: 10px 0;
+  padding: 8px 16px;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.gbp-link:hover {
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+}
+
+.gbp-link:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}

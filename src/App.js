@@ -50,6 +50,7 @@ function App() {
   const [maxDepth, setMaxDepth] = useState(2);
   const [keywordInput, setKeywordInput] = useState("");
   const [keywords, setKeywords] = useState([]);
+  const [location, setLocation] = useState("");
   const [results, setResults] = useState(null);
   const [availableColors, setAvailableColors] = useState([...lightColors]);
   const [loading, setLoading] = useState(false);
@@ -64,6 +65,7 @@ function App() {
         url,
         maxDepth,
         keywords: keywords.map((k) => k.text),
+        location,
       });
       setResults(response.data);
       console.log(response.data);
@@ -420,6 +422,14 @@ function App() {
               onChange={(e) => setUrl(e.target.value)}
               required
             />
+            <label htmlFor="location-input">Business Location:</label>
+            <input
+              id="location-input"
+              type="text"
+              placeholder="Enter business location (optional)"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
             <label htmlFor="depth-input">Crawl Depth:</label>
             <input
               id="depth-input"
@@ -680,6 +690,47 @@ function App() {
                         )}
                       </div>
                     </div>
+                    {results.googleBusinessProfile && (
+                      <div className="gbp-status">
+                        <h4>Google Business Profile Status:</h4>
+                        {results.googleBusinessProfile.exists ? (
+                          <>
+                            <p>✅ Business has a Google Business Profile</p>
+                            {results.googleBusinessProfile.profileUrl && (
+                              <p>
+                                <a
+                                  href={
+                                    results.googleBusinessProfile.profileUrl
+                                  }
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="gbp-link"
+                                >
+                                  View Google Business Profile →
+                                </a>
+                              </p>
+                            )}
+                            {results.googleBusinessProfile.isComplete ? (
+                              <p>✅ Profile is complete</p>
+                            ) : (
+                              <div>
+                                <p>⚠️ Profile is incomplete</p>
+                                <p>Missing elements:</p>
+                                <ul>
+                                  {results.googleBusinessProfile.missingElements.map(
+                                    (element, index) => (
+                                      <li key={index}>{element}</li>
+                                    )
+                                  )}
+                                </ul>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <p>❌ No Google Business Profile found</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })}
