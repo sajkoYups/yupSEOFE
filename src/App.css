@@ -20,6 +20,12 @@ body {
   box-sizing: border-box;
 }
 
+.App section {
+  padding-bottom: 10rem;
+  margin-bottom: 10rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
 h1,
 h3 {
   text-align: center;
@@ -274,4 +280,47 @@ form {
 .gbp-link:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.socials-section {
+  margin: 20px 0;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.socials-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background-color: #fff;
+}
+
+.socials-table th,
+.socials-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.socials-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+}
+
+.socials-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.socials-table a {
+  color: #007bff;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.socials-table a:hover {
+  text-decoration: underline;
+  color: #0056b3;
 }
