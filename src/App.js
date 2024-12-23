@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./App.css";
 import {
@@ -20,6 +20,8 @@ import { LocalSEO } from "./Sections/LocalSEO";
 import { tagBackgroundColors } from "./constatns/tagBackgroundColors";
 import { calculateGrade } from "./helpers/gradesHelper";
 import pdfMake from "pdfmake/build/pdfmake";
+import { KeywordAnalysis } from "./Sections/KeywordAnalysis";
+import { TitleAnalysis } from "./Sections/TitleAnalysis";
 
 // Register the necessary components
 ChartJS.register(
@@ -44,6 +46,13 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingSubmitEvent, setPendingSubmitEvent] = useState(null);
+  const [selectedUrl, setSelectedUrl] = useState(null);
+
+  useEffect(() => {
+    if (results?.seoResults?.length > 0) {
+      setSelectedUrl(results.seoResults[0].url);
+    }
+  }, [results]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -352,120 +361,204 @@ function App() {
       alert("Error generating PDF. Please try again.");
     }
   };
-  console.log("results", results);
+
+  const handleUrlChange = (event) => {
+    setSelectedUrl(event.target.value);
+  };
+
+  const selectedPageData = selectedUrl
+    ? results?.seoResults.find((result) => result.url === selectedUrl)
+    : null;
+
   return (
     <div className="App">
-      {results && <button onClick={exportToPDF}>Export to PDF</button>}
-      <div id="pdf-content" style={{ padding: "20px" }}>
-        {loading && (
-          <div className="loading-overlay">
-            <div className="spinner"></div>
-            <p>
-              Loading... Please wait while we analyze your SEO data. This
-              operation might take more than a minute.
-            </p>
+      {loading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+          <p>
+            Loading... Please wait while we analyze your SEO data. This
+            operation might take more than a minute.
+          </p>
+        </div>
+      )}
+      <header className="dashboard-header">
+        <h1>YupSEO Auditor</h1>
+        {results && (
+          <div className="header-controls">
+            <div className="url-selector">
+              <select value={selectedUrl} onChange={handleUrlChange}>
+                {results.seoResults.map((result, index) => (
+                  <option key={index} value={result.url}>
+                    {result.url}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button className="export-button" onClick={exportToPDF}>
+              Export to PDF
+            </button>
           </div>
         )}
-        <header className="App-header">
-          <h1>YupSEO Auditor</h1>
-          <form onSubmit={handleFormSubmit}>
-            <label htmlFor="url-input">Website URL:</label>
-            <input
-              id="url-input"
-              type="text"
-              placeholder="Enter URL"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              required
-            />
-            <label htmlFor="location-input">Business Location:</label>
-            <input
-              id="location-input"
-              type="text"
-              placeholder="Enter business location (optional)"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
-            <label htmlFor="depth-input">Crawl Depth:</label>
-            <input
-              id="depth-input"
-              type="number"
-              placeholder="Max Depth"
-              value={maxDepth}
-              onChange={(e) => setMaxDepth(e.target.value)}
-              min="1"
-              required
-            />
-            <label htmlFor="keywords-input">Keywords:</label>
-            <input
-              id="keywords-input"
-              type="text"
-              placeholder="Enter Keywords and press Enter"
-              value={keywordInput}
-              onChange={handleKeywordInput}
-              onKeyDown={handleKeywordAdd}
-            />
-            <div className="keyword-tags">
-              {keywords.map((keyword, index) => (
-                <div
-                  key={index}
-                  className="keyword-tag"
-                  style={{ backgroundColor: keyword.color }}
-                >
-                  <span>{keyword.text}</span>
-                  <button onClick={() => handleKeywordRemove(index)}>x</button>
+      </header>
+      {loading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+          <p>
+            Loading... Please wait while we analyze your SEO data. This
+            operation might take more than a minute.
+          </p>
+        </div>
+      )}
+      {results && (
+        <div className="dashboard">
+          <div className="dashboard-grid">
+            {/* Left container */}
+            <div className="dashboard-left">
+              <div className="dashboard-card large-card">
+                <h2>On-Page SEO</h2>
+                {selectedPageData && <OnPageSEO result={selectedPageData} />}
+              </div>
+            </div>
+
+            {/* Right container */}
+            <div className="dashboard-right">
+              <div className="dashboard-card">
+                <h2>Title Analysis</h2>
+                {selectedPageData && (
+                  <TitleAnalysis result={selectedPageData} />
+                )}
+              </div>
+
+              {/* Keyword Analysis Card */}
+              <div className="dashboard-card">
+                <h2>Keyword Analysis</h2>
+                {selectedPageData && (
+                  <KeywordAnalysis result={selectedPageData} />
+                )}
+              </div>
+              <div className="dashboard-card">
+                <h2>Performance</h2>
+                {selectedPageData && <Performance result={selectedPageData} />}
+              </div>
+
+              <div className="dashboard-card">
+                <h2>Links</h2>
+                {selectedPageData && <Links result={selectedPageData} />}
+              </div>
+
+              <div className="dashboard-card">
+                <h2>Social Media</h2>
+                {selectedPageData && <Socials result={selectedPageData} />}
+              </div>
+
+              <div className="dashboard-card">
+                <h2>Local SEO</h2>
+                {selectedPageData && <LocalSEO results={results} />}
+              </div>
+
+              {/* Add other cards as needed */}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Keep your existing form for initial URL input */}
+      {!results && (
+        <div className="initial-form">
+          <div className="form-container">
+            <form onSubmit={handleFormSubmit}>
+              <div>
+                <label htmlFor="url-input">Website URL:</label>
+                <input
+                  id="url-input"
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="Enter website URL"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="depth-input">Crawl Depth:</label>
+                <input
+                  id="depth-input"
+                  type="number"
+                  value={maxDepth}
+                  onChange={(e) => setMaxDepth(parseInt(e.target.value))}
+                  min="1"
+                  max="5"
+                  required
+                />
+              </div>
+
+              <div>
+                <label htmlFor="location-input">Location:</label>
+                <input
+                  id="location-input"
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Enter location (optional)"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="keywords-input">Keywords:</label>
+                <input
+                  id="keywords-input"
+                  type="text"
+                  placeholder="Enter Keywords and press Enter"
+                  value={keywordInput}
+                  onChange={handleKeywordInput}
+                  onKeyDown={handleKeywordAdd}
+                />
+                <div className="keyword-tags">
+                  {keywords.map((keyword, index) => (
+                    <div
+                      key={index}
+                      className="keyword-tag"
+                      style={{ backgroundColor: keyword.color }}
+                    >
+                      <span>{keyword.text}</span>
+                      <button onClick={() => handleKeywordRemove(index)}>
+                        ×
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <button type="submit">Audit</button>
-          </form>
-          {results && (
-            <>
-              <DescriptionHardCodedText />
-              <LocalSEO results={results} />
-              {results.seoResults.map((result, index) => {
-                return (
-                  <div key={index}>
-                    <h1>Page: {result.url}</h1>
-                    <OnPageSEO result={result} />
-                    <Socials result={result} />
-                    <Links result={result} />
-                    <Performance result={result} />
+              </div>
+
+              <button type="submit">Audit</button>
+            </form>
+            {showConfirmModal && (
+              <div className="modal-overlay">
+                <div className="modal-content">
+                  <h2>Start Website Audit</h2>
+                  <p>
+                    You are about to perform a comprehensive SEO audit on this
+                    website. This process may take several minutes.
+                  </p>
+                  <div className="modal-actions">
+                    <button
+                      className="modal-button cancel"
+                      onClick={() => {
+                        setShowConfirmModal(false);
+                        setPendingSubmitEvent(null);
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="modal-button confirm"
+                      onClick={handleConfirmAudit}
+                    >
+                      Start Audit
+                    </button>
                   </div>
-                );
-              })}
-              <footer style={{ marginTop: "20px", textAlign: "center" }}>
-                <p>Generated by YupSEO Auditor</p>
-              </footer>
-            </>
-          )}
-        </header>
-      </div>
-      {showConfirmModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>Start Website Audit</h2>
-            <p>
-              You are about to perform a comprehensive SEO audit on this
-              website. This process may take several minutes.
-            </p>
-            <div className="modal-actions">
-              <button
-                className="modal-button cancel"
-                onClick={() => {
-                  setShowConfirmModal(false);
-                  setPendingSubmitEvent(null);
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                className="modal-button confirm"
-                onClick={handleConfirmAudit}
-              >
-                Start Audit
-              </button>
-            </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

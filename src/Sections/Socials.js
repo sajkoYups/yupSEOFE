@@ -5,7 +5,6 @@ export const Socials = ({ result }) => {
   return (
     // <section className="socials-section">
     <section>
-      <h1>Socials</h1>
       <SocialsPreview result={result} />
     </section>
   );

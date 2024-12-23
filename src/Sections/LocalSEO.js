@@ -4,7 +4,6 @@ import { GoogleBusinessProfileTable } from "../components/GoogleBusinessProfileT
 export const LocalSEO = ({ results }) => {
   return (
     <section>
-      <h1>Local SEO</h1>
       <GoogleBusinessProfileTable results={results} />
     </section>
   );
