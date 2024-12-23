@@ -22,6 +22,7 @@ import { calculateGrade } from "./helpers/gradesHelper";
 import pdfMake from "pdfmake/build/pdfmake";
 import { KeywordAnalysis } from "./Sections/KeywordAnalysis";
 import { TitleAnalysis } from "./Sections/TitleAnalysis";
+import { API_URL } from "./config";
 
 // Register the necessary components
 ChartJS.register(
@@ -58,7 +59,7 @@ function App() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:5001/crawl", {
+      const response = await axios.post(`${API_URL}/crawl`, {
         url,
         maxDepth,
         keywords: keywords.map((k) => k.text),
