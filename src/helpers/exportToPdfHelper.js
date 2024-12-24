@@ -1,19 +1,6 @@
 import pdfMake from "pdfmake/build/pdfmake";
-// import pdfFonts from "pdfmake/build/vfs_fonts";
 import { calculateGrade } from "./gradesHelper";
-
-// Register the virtual file system (vfs) with pdfMake
-// pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
-// Define the fonts
-pdfMake.fonts = {
-  Roboto: {
-    normal: "Roboto-Regular.ttf",
-    bold: "Roboto-Medium.ttf",
-    italics: "Roboto-Italic.ttf",
-    bolditalics: "Roboto-MediumItalic.ttf",
-  },
-};
+// No need to set pdfMake.vfs or custom fonts
 
 export const exportToPDF = async (results, url) => {
   if (!results) return;
@@ -228,7 +215,6 @@ export const exportToPDF = async (results, url) => {
     defaultStyle: {
       fontSize: 10,
       lineHeight: 1.2,
-      font: "Roboto",
     },
   };
 
