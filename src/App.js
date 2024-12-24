@@ -46,6 +46,7 @@ function App() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingSubmitEvent, setPendingSubmitEvent] = useState(null);
   const [selectedUrl, setSelectedUrl] = useState(null);
+  const [companyName, setCompanyName] = useState("");
 
   useEffect(() => {
     if (results?.seoResults?.length > 0) {
@@ -56,9 +57,19 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    // Ensure the URL starts with 'https://www'
+    let formattedUrl = url.trim();
+    if (!formattedUrl.startsWith("https://www.")) {
+      formattedUrl = `https://www.${formattedUrl.replace(
+        /^(https?:\/\/)?(www\.)?/,
+        ""
+      )}`;
+    }
+
     try {
       const response = await axios.post(`${API_URL}/crawl`, {
-        url,
+        url: formattedUrl,
         maxDepth,
         keywords: keywords.map((k) => k.text),
         location,
@@ -238,7 +249,7 @@ function App() {
                   type="text"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder="Enter website URL"
+                  placeholder="Enter website URL (https://www.example.com)"
                   required
                 />
               </div>
@@ -256,15 +267,28 @@ function App() {
                 />
               </div>
 
-              <div>
-                <label htmlFor="location-input">Location:</label>
-                <input
-                  id="location-input"
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Enter location (optional)"
-                />
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="company-name-input">Company Name:</label>
+                  <input
+                    id="company-name-input"
+                    type="text"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder="Enter company name"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="location-input">Location:</label>
+                  <input
+                    id="location-input"
+                    type="text"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Enter location (optional)"
+                  />
+                </div>
               </div>
 
               <div>

@@ -701,3 +701,17 @@ form {
 .dashboard-card::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-group {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.form-group:last-child {
+  margin-right: 0;
+}
