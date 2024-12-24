@@ -21,6 +21,9 @@ import { KeywordAnalysis } from "./Sections/KeywordAnalysis";
 import { TitleAnalysis } from "./Sections/TitleAnalysis";
 import { API_URL } from "./config";
 import { exportToPDF } from "./helpers/exportToPdfHelper";
+import { Tooltip as ReactTooltip } from "react-tooltip";
+import InfoIconOutlined from "@mui/icons-material/InfoOutlined";
+import { Spinner } from "./components/Spinner";
 
 // Register the necessary components
 ChartJS.register(
@@ -144,15 +147,7 @@ function App() {
 
   return (
     <div className="App">
-      {loading && (
-        <div className="loading-overlay">
-          <div className="spinner"></div>
-          <p>
-            Loading... Please wait while we analyze your SEO data. This
-            operation might take more than a minute.
-          </p>
-        </div>
-      )}
+      {loading && <Spinner />}
       <header className="dashboard-header">
         <h1>YupSEO Auditor</h1>
         {results && (
@@ -175,15 +170,7 @@ function App() {
           </div>
         )}
       </header>
-      {loading && (
-        <div className="loading-overlay">
-          <div className="spinner"></div>
-          <p>
-            Loading... Please wait while we analyze your SEO data. This
-            operation might take more than a minute.
-          </p>
-        </div>
-      )}
+
       {results && (
         <div className="dashboard">
           <div className="dashboard-grid">
@@ -243,7 +230,43 @@ function App() {
           <div className="form-container">
             <form onSubmit={handleFormSubmit}>
               <div>
-                <label htmlFor="url-input">Website URL:</label>
+                <ReactTooltip
+                  id="my-tooltip-1"
+                  place="bottom"
+                  variant="info"
+                  content="Enter the website URL you want to audit. Dont't forget to include the https://www. part"
+                />
+                <ReactTooltip
+                  id="my-tooltip-2"
+                  place="bottom"
+                  variant="info"
+                  content="Enter the depth of the website you want to audit. The depth is the number of pages that will be crawled. The maximum depth is 5"
+                />
+                <ReactTooltip
+                  id="my-tooltip-3"
+                  place="bottom"
+                  variant="info"
+                  content="Enter the name of the company you want to audit. This is used to generate the report title"
+                />
+                <ReactTooltip
+                  id="my-tooltip-4"
+                  place="bottom"
+                  variant="info"
+                  content="Enter the location of the company you want to audit. This is used for local SEO analysis"
+                />
+                <ReactTooltip
+                  id="my-tooltip-5"
+                  place="bottom"
+                  variant="info"
+                  content="Enter the keywords you want to rank for in the search engines. This is used for keyword analysis"
+                />
+                <div className="label-and-icon-tooltip-container">
+                  <label htmlFor="url-input">Website URL:</label>
+                  <InfoIconOutlined
+                    data-tooltip-id="my-tooltip-1"
+                    className="info-icon"
+                  />
+                </div>
                 <input
                   id="url-input"
                   type="text"
@@ -255,7 +278,13 @@ function App() {
               </div>
 
               <div>
-                <label htmlFor="depth-input">Crawl Depth:</label>
+                <div className="label-and-icon-tooltip-container">
+                  <label htmlFor="depth-input">Crawl Depth:</label>
+                  <InfoIconOutlined
+                    data-tooltip-id="my-tooltip-2"
+                    className="info-icon"
+                  />
+                </div>
                 <input
                   id="depth-input"
                   type="number"
@@ -269,7 +298,13 @@ function App() {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="company-name-input">Company Name:</label>
+                  <div className="label-and-icon-tooltip-container">
+                    <label htmlFor="company-name-input">Company Name:</label>
+                    <InfoIconOutlined
+                      data-tooltip-id="my-tooltip-3"
+                      className="info-icon"
+                    />
+                  </div>
                   <input
                     id="company-name-input"
                     type="text"
@@ -280,7 +315,13 @@ function App() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="location-input">Location:</label>
+                  <div className="label-and-icon-tooltip-container">
+                    <label htmlFor="location-input">Location:</label>
+                    <InfoIconOutlined
+                      data-tooltip-id="my-tooltip-4"
+                      className="info-icon"
+                    />
+                  </div>
                   <input
                     id="location-input"
                     type="text"
@@ -292,7 +333,13 @@ function App() {
               </div>
 
               <div>
-                <label htmlFor="keywords-input">Keywords:</label>
+                <div className="label-and-icon-tooltip-container">
+                  <label htmlFor="keywords-input">Keywords:</label>
+                  <InfoIconOutlined
+                    data-tooltip-id="my-tooltip-5"
+                    className="info-icon"
+                  />
+                </div>
                 <input
                   id="keywords-input"
                   type="text"

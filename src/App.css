@@ -715,3 +715,40 @@ form {
 .form-group:last-child {
   margin-right: 0;
 }
+
+.label-and-icon-tooltip-container {
+  display: flex;
+  align-items: center;
+}
+
+.info-icon {
+  margin-left: 8px;
+  margin-bottom: 8px;
+  color: #898a8b;
+}
+
+.info-icon:hover {
+  cursor: pointer;
+}
+
+.loading-content {
+  text-align: center;
+  max-width: 100%;
+  padding: 20px;
+}
+
+.loading-message {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.seo-fact {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  color: #2c3e50;
+  font-size: 16px;
+  line-height: 1.5;
+}
