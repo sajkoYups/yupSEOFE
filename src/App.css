@@ -722,9 +722,10 @@ form {
 }
 
 .info-icon {
-  margin-left: 8px;
+  margin-left: 6px;
   margin-bottom: 8px;
   color: #898a8b;
+  font-size: 1rem !important;
 }
 
 .info-icon:hover {
@@ -751,4 +752,62 @@ form {
   color: #2c3e50;
   font-size: 16px;
   line-height: 1.5;
+}
+
+.schema-preview {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.schema-preview table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.schema-preview th,
+.schema-preview td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.schema-preview th {
+  background-color: #f5f5f5;
+}
+
+.schema-content {
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  padding: 8px;
+  margin: 0;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+.no-schema {
+  color: #dc3545;
+  text-align: center;
+  padding: 20px;
+}
+
+.schema-evaluation {
+  font-size: 14px;
+  padding: 8px;
+}
+
+.schema-evaluation ul {
+  margin: 8px 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.schema-evaluation li {
+  color: #666;
+  margin: 4px 0;
+}
+
+.schema-evaluation p {
+  margin: 0;
+  color: #333;
 }

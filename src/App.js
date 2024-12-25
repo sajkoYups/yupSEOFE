@@ -24,6 +24,7 @@ import { exportToPDF } from "./helpers/exportToPdfHelper";
 import { Tooltip as ReactTooltip } from "react-tooltip";
 import InfoIconOutlined from "@mui/icons-material/InfoOutlined";
 import { Spinner } from "./components/Spinner";
+import { SchemaPreview } from "./components/SchemaPreview";
 
 // Register the necessary components
 ChartJS.register(
@@ -76,6 +77,7 @@ function App() {
         maxDepth,
         keywords: keywords.map((k) => k.text),
         location,
+        companyName,
       });
       setResults(response.data);
       console.log(response.data);
@@ -179,6 +181,15 @@ function App() {
               <div className="dashboard-card large-card">
                 <h2>On-Page SEO</h2>
                 {selectedPageData && <OnPageSEO result={selectedPageData} />}
+              </div>
+              <div
+                style={{ marginTop: "24px" }}
+                className="dashboard-card large-card"
+              >
+                <h2>Schema Markup</h2>
+                {selectedPageData && (
+                  <SchemaPreview result={selectedPageData} />
+                )}
               </div>
             </div>
 
