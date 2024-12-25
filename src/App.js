@@ -42,6 +42,7 @@ function App() {
     isOpen: false,
     title: "",
     description: "",
+    improvements: [],
   });
   const [url, setUrl] = useState("");
   const [maxDepth, setMaxDepth] = useState(2);
@@ -161,6 +162,7 @@ function App() {
         onClose={() => setModalInfo({ ...modalInfo, isOpen: false })}
         title={modalInfo.title}
         description={modalInfo.description}
+        improvements={modalInfo.improvements}
       />
       {loading && <Spinner />}
       <header className="dashboard-header">
@@ -302,7 +304,9 @@ function App() {
                     className="info-icon"
                   />
                 </div>
-                {selectedPageData && <LocalSEO results={results} />}
+                {selectedPageData && (
+                  <LocalSEO results={results} setModalInfo={setModalInfo} />
+                )}
               </div>
 
               {/* Add other cards as needed */}

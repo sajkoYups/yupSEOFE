@@ -8,6 +8,7 @@ export const PerformanceTable = ({ result, setModalInfo }) => {
         isOpen: true,
         title: PERFORMANCE_DESCRIPTIONS[category].title,
         description: PERFORMANCE_DESCRIPTIONS[category].description,
+        improvements: PERFORMANCE_DESCRIPTIONS[category].improvements,
       });
     }
   };

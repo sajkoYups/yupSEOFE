@@ -8,6 +8,7 @@ export const LinksTable = ({ result, setModalInfo }) => {
         isOpen: true,
         title: LINKS_DESCRIPTIONS[category].title,
         description: LINKS_DESCRIPTIONS[category].description,
+        improvements: LINKS_DESCRIPTIONS[category].improvements,
       });
     }
   };

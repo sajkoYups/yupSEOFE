@@ -1,6 +1,18 @@
 import React from "react";
+import { LOCAL_SEO_DESCRIPTIONS } from "../constants/LocalSeoTableConstants";
 
-export const GoogleBusinessProfileTable = ({ results }) => {
+export const GoogleBusinessProfileTable = ({ results, setModalInfo }) => {
+  const handleRowClick = (category) => {
+    if (LOCAL_SEO_DESCRIPTIONS[category]) {
+      setModalInfo({
+        isOpen: true,
+        title: LOCAL_SEO_DESCRIPTIONS[category].title,
+        description: LOCAL_SEO_DESCRIPTIONS[category].description,
+        improvements: LOCAL_SEO_DESCRIPTIONS[category].improvements,
+      });
+    }
+  };
+
   return (
     <>
       {results.googleBusinessProfile && (
@@ -13,7 +25,16 @@ export const GoogleBusinessProfileTable = ({ results }) => {
               </tr>
             </thead>
             <tbody>
-              <tr>
+              <tr
+                className="clickable-row"
+                onClick={() =>
+                  handleRowClick(
+                    results.googleBusinessProfile.exists
+                      ? "Google Business Profile"
+                      : "No Google Business Profile"
+                  )
+                }
+              >
                 <td>Google Business Profile</td>
                 <td>
                   {results.googleBusinessProfile.exists
@@ -23,7 +44,10 @@ export const GoogleBusinessProfileTable = ({ results }) => {
               </tr>
               {results.googleBusinessProfile.exists && (
                 <>
-                  <tr>
+                  <tr
+                    className="clickable-row"
+                    onClick={() => handleRowClick("Profile URL")}
+                  >
                     <td>Profile URL</td>
                     <td>
                       {results.googleBusinessProfile.profileUrl ? (
@@ -40,7 +64,10 @@ export const GoogleBusinessProfileTable = ({ results }) => {
                       )}
                     </td>
                   </tr>
-                  <tr>
+                  <tr
+                    className="clickable-row"
+                    onClick={() => handleRowClick("Profile Completeness")}
+                  >
                     <td>Profile Completeness</td>
                     <td>
                       {results.googleBusinessProfile.isComplete ? (

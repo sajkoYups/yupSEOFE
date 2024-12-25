@@ -10,6 +10,7 @@ export const CategoryAndGradeTable = ({ result, setModalInfo }) => {
       isOpen: true,
       title: SEO_DESCRIPTIONS[category].title,
       description: SEO_DESCRIPTIONS[category].description,
+      improvements: SEO_DESCRIPTIONS[category].improvements,
     });
   };
 
