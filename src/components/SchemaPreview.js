@@ -13,7 +13,6 @@ export const SchemaPreview = ({ result }) => {
             evaluation.overallAssessment.hasDuplicates ? "warning" : "success"
           }`}
         >
-          <h3>Schema Overview</h3>
           <p>{evaluation.overallAssessment.message}</p>
           {evaluation.overallAssessment.recommendedTypes.length > 0 && (
             <div className="schema-recommendations">

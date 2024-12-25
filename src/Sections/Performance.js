@@ -1,10 +1,10 @@
 import React from "react";
 import { PerformanceTable } from "../components/PerformanceTable";
 
-export const Performance = ({ result }) => {
+export const Performance = ({ result, setModalInfo }) => {
   return (
     <section>
-      <PerformanceTable result={result} />
+      <PerformanceTable result={result} setModalInfo={setModalInfo} />
     </section>
   );
 };

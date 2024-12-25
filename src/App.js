@@ -21,10 +21,11 @@ import { KeywordAnalysis } from "./Sections/KeywordAnalysis";
 import { TitleAnalysis } from "./Sections/TitleAnalysis";
 import { API_URL } from "./config";
 import { exportToPDF } from "./helpers/exportToPdfHelper";
-import { Tooltip as ReactTooltip } from "react-tooltip";
 import InfoIconOutlined from "@mui/icons-material/InfoOutlined";
 import { Spinner } from "./components/Spinner";
 import { SchemaPreview } from "./components/SchemaPreview";
+import { OurReactTooltips } from "./components/OurReactTooltips";
+import { DescriptionModal } from "./components/DescriptionModal";
 
 // Register the necessary components
 ChartJS.register(
@@ -37,6 +38,11 @@ ChartJS.register(
 );
 
 function App() {
+  const [modalInfo, setModalInfo] = useState({
+    isOpen: false,
+    title: "",
+    description: "",
+  });
   const [url, setUrl] = useState("");
   const [maxDepth, setMaxDepth] = useState(2);
   const [keywordInput, setKeywordInput] = useState("");
@@ -149,6 +155,13 @@ function App() {
 
   return (
     <div className="App">
+      <OurReactTooltips />
+      <DescriptionModal
+        isOpen={modalInfo.isOpen}
+        onClose={() => setModalInfo({ ...modalInfo, isOpen: false })}
+        title={modalInfo.title}
+        description={modalInfo.description}
+      />
       {loading && <Spinner />}
       <header className="dashboard-header">
         <h1>YupSEO Auditor</h1>
@@ -179,14 +192,31 @@ function App() {
             {/* Left container */}
             <div className="dashboard-left">
               <div className="dashboard-card large-card">
-                <h2>On-Page SEO</h2>
-                {selectedPageData && <OnPageSEO result={selectedPageData} />}
+                <div className="label-and-icon-tooltip-container-dashboard">
+                  <h2>On-Page SEO</h2>
+                  <InfoIconOutlined
+                    data-tooltip-id="my-tooltip-6"
+                    className="info-icon"
+                  />
+                </div>
+                {selectedPageData && (
+                  <OnPageSEO
+                    result={selectedPageData}
+                    setModalInfo={setModalInfo}
+                  />
+                )}
               </div>
               <div
                 style={{ marginTop: "24px" }}
                 className="dashboard-card large-card"
               >
-                <h2>Schema Markup</h2>
+                <div className="label-and-icon-tooltip-container-dashboard">
+                  <h2>Schema Markup</h2>
+                  <InfoIconOutlined
+                    data-tooltip-id="my-tooltip-7"
+                    className="info-icon"
+                  />
+                </div>
                 {selectedPageData && (
                   <SchemaPreview result={selectedPageData} />
                 )}
@@ -196,7 +226,13 @@ function App() {
             {/* Right container */}
             <div className="dashboard-right">
               <div className="dashboard-card">
-                <h2>Title Analysis</h2>
+                <div className="label-and-icon-tooltip-container-dashboard">
+                  <h2>Title Analysis</h2>
+                  <InfoIconOutlined
+                    data-tooltip-id="my-tooltip-8"
+                    className="info-icon"
+                  />
+                </div>
                 {selectedPageData && (
                   <TitleAnalysis result={selectedPageData} />
                 )}
@@ -204,28 +240,68 @@ function App() {
 
               {/* Keyword Analysis Card */}
               <div className="dashboard-card">
-                <h2>Keyword Analysis</h2>
+                <div className="label-and-icon-tooltip-container-dashboard">
+                  <h2>Keyword Analysis</h2>
+                  <InfoIconOutlined
+                    data-tooltip-id="my-tooltip-9"
+                    className="info-icon"
+                  />
+                </div>
                 {selectedPageData && (
                   <KeywordAnalysis result={selectedPageData} />
                 )}
               </div>
               <div className="dashboard-card">
-                <h2>Performance</h2>
-                {selectedPageData && <Performance result={selectedPageData} />}
+                <div className="label-and-icon-tooltip-container-dashboard">
+                  <h2>Performance</h2>
+                  <InfoIconOutlined
+                    data-tooltip-id="my-tooltip-10"
+                    className="info-icon"
+                  />
+                </div>
+                {selectedPageData && (
+                  <Performance
+                    result={selectedPageData}
+                    setModalInfo={setModalInfo}
+                  />
+                )}
               </div>
 
               <div className="dashboard-card">
-                <h2>Links</h2>
-                {selectedPageData && <Links result={selectedPageData} />}
+                <div className="label-and-icon-tooltip-container-dashboard">
+                  <h2>Links</h2>
+                  <InfoIconOutlined
+                    data-tooltip-id="my-tooltip-11"
+                    className="info-icon"
+                  />
+                </div>
+                {selectedPageData && (
+                  <Links
+                    result={selectedPageData}
+                    setModalInfo={setModalInfo}
+                  />
+                )}
               </div>
 
               <div className="dashboard-card">
-                <h2>Social Media</h2>
+                <div className="label-and-icon-tooltip-container-dashboard">
+                  <h2>Social Media</h2>
+                  <InfoIconOutlined
+                    data-tooltip-id="my-tooltip-12"
+                    className="info-icon"
+                  />
+                </div>
                 {selectedPageData && <Socials result={selectedPageData} />}
               </div>
 
               <div className="dashboard-card">
-                <h2>Local SEO</h2>
+                <div className="label-and-icon-tooltip-container-dashboard">
+                  <h2>Local SEO</h2>
+                  <InfoIconOutlined
+                    data-tooltip-id="my-tooltip-13"
+                    className="info-icon"
+                  />
+                </div>
                 {selectedPageData && <LocalSEO results={results} />}
               </div>
 
@@ -241,36 +317,6 @@ function App() {
           <div className="form-container">
             <form onSubmit={handleFormSubmit}>
               <div>
-                <ReactTooltip
-                  id="my-tooltip-1"
-                  place="bottom"
-                  variant="info"
-                  content="Enter the website URL you want to audit. Dont't forget to include the https://www. part"
-                />
-                <ReactTooltip
-                  id="my-tooltip-2"
-                  place="bottom"
-                  variant="info"
-                  content="Enter the depth of the website you want to audit. The depth is the number of pages that will be crawled. The maximum depth is 5"
-                />
-                <ReactTooltip
-                  id="my-tooltip-3"
-                  place="bottom"
-                  variant="info"
-                  content="Enter the name of the company you want to audit. This is used to generate the report title"
-                />
-                <ReactTooltip
-                  id="my-tooltip-4"
-                  place="bottom"
-                  variant="info"
-                  content="Enter the location of the company you want to audit. This is used for local SEO analysis"
-                />
-                <ReactTooltip
-                  id="my-tooltip-5"
-                  place="bottom"
-                  variant="info"
-                  content="Enter the keywords you want to rank for in the search engines. This is used for keyword analysis"
-                />
                 <div className="label-and-icon-tooltip-container">
                   <label htmlFor="url-input">Website URL:</label>
                   <InfoIconOutlined
